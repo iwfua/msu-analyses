@@ -1,0 +1,6 @@
+
+
+
+POST /api/auth/register - регистрация
+POST /api/auth/login - аутентификация
+GET /api/auth/me - получение текущего пользователя
