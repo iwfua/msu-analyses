@@ -12,7 +12,9 @@ public class PasswordEncoderConfig {
     
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // Strength 8 дает ~50-70мс вместо 200-300мс при strength 10
+        // Для production можно использовать 8-9, это все еще безопасно
+        return new BCryptPasswordEncoder(8);
     }
 
     @Bean

@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/course")
 public class CourseController {
 
@@ -53,35 +53,16 @@ public class CourseController {
 
     @GetMapping("/cb")
     public Integer getCourseForCb() {
+        log.info("Прилетел запрос GET /cb");
         if (service.getRateCbr() == null) {
             requestCbRate();
             return service.getRateCbr();
         }
+
         return service.getRateCbr();
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void fetchCbRate() {
-        requestCbRate();
-    }
-
-    public void requestCbRate() {
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String url = String.format(getCourseCbUrl, token, date);
-
-        ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
-
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            JsonNode body = response.getBody();
-            JsonNode data = body.get("data");
-            if (data != null && data.has("rate")) {
-                Integer rate = data.get("rate").asInt();
-                service.setRateCbr(rate);
-            }
-        }
-    }
-
-        @GetMapping("/ruonia")
+    @GetMapping("/ruonia")
     public Double getCourseForRuonia() {
 
         if (service.getRateRuonia() == null) {
@@ -91,12 +72,17 @@ public class CourseController {
         return service.getRateRuonia();
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void fetchCbRate() {
+        requestCbRate();
+    }
+
     @Scheduled(cron = "0 0 * * * ?")
     public void fetchRuoniaRate() {
         requestRuoniaRate();
     }
 
-    public void requestRuoniaRate() {
+    private void requestRuoniaRate() {
         try {
             String fromDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE);
             String toDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -121,6 +107,23 @@ public class CourseController {
 
         } catch (Exception e) {
             throw new RuntimeException("Ошибка получения ставки RUONIA: " + e.getMessage(), e);
+        }
+    }
+
+
+    private void requestCbRate() {
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String url = String.format(getCourseCbUrl, token, date);
+
+        ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            JsonNode body = response.getBody();
+            JsonNode data = body.get("data");
+            if (data != null && data.has("rate")) {
+                Integer rate = data.get("rate").asInt();
+                service.setRateCbr(rate);
+            }
         }
     }
 }

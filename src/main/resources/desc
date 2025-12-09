@@ -4,3 +4,54 @@
 POST /api/auth/register - регистрация
 POST /api/auth/login - аутентификация
 GET /api/auth/me - получение текущего пользователя
+
+
+table1, table2, table3, table4 = [], [], [], []
+
+pk1 = pk2 = pk3 = pk4 = 1
+
+uniq_table3 = set()  # (F, G, I)
+uniq_table4 = set()  # (A, I)
+uniq_table2 = set()  # (A, F, I, G, B)
+uniq_table1 = set()  # (A, B, D)
+
+
+fk_table3 = {}  # (F, G, I)
+fk_table4 = {}  # (A, I)
+fk_table2 = {}  # (A, F, I, G, B)
+
+for si in table:  # si — строка исходной таблицы (список значений по колонкам A...I)
+
+    key3 = (si[5], si[6], si[8])  # F, G, I
+    if key3 not in uniq_table3:
+        uniq_table3.add(key3)
+        fk_table3[key3] = pk3
+        table3.append([pk3, si[5], si[6], si[8], si[2]])  # ID3, F, G, I, C
+        pk3 += 1
+
+    key4 = (si[0], si[8])  # A, I
+    if key4 not in uniq_table4:
+        uniq_table4.add(key4)
+        fk_table4[key4] = pk4
+        table4.append([pk4, si[0], si[8], si[7]])  # ID4, A, I, H
+        pk4 += 1
+
+    key2 = (si[0], si[5], si[8], si[6], si[1])  # A, F, I, G, B
+    if key2 not in uniq_table2:
+        fpk3 = fk_table3.get((si[5], si[6], si[8]))
+        fpk4 = fk_table4.get((si[0], si[8]))
+        if fpk3 and fpk4:
+            uniq_table2.add(key2)
+            fk_table2[key2] = pk2
+            table2.append([pk2, si[0], si[5], si[8], si[6], si[1], fpk3, fpk4])
+            pk2 += 1
+
+    key1 = (si[0], si[1], si[3])  # A, B, D
+    if key1 not in uniq_table1:
+        fpk2 = fk_table2.get((si[0], si[5], si[8], si[6], si[1]))
+        fpk3 = fk_table3.get((si[5], si[6], si[8]))
+        fpk4 = fk_table4.get((si[0], si[8]))
+        if fpk2 and fpk3 and fpk4:
+            uniq_table1.add(key1)
+            table1.append([pk1, si[0], si[1], si[3], si[4], fpk2, fpk3, fpk4])
+            pk1 += 1

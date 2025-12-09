@@ -71,7 +71,8 @@ public class RefreshTokenService {
     public void deleteByUser(User user) {
         refreshTokenRepository.deleteByUser(user);
     }
-    
+
+    //TODO сделать шедулер для очистки
     @Transactional
     public void deleteExpiredTokens() {
         refreshTokenRepository.deleteExpiredTokens();

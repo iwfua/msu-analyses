@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 public class Text {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(nullable = false, length = 70)
-    private String key;
+    private String identif;
 
     @Column(nullable = false, length = 255)
-    private String value;
+    private String text;
 }

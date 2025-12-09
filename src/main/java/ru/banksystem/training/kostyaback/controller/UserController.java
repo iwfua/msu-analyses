@@ -10,7 +10,7 @@ import ru.banksystem.training.kostyaback.service.UserService;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
 
     private final UserService service;
@@ -19,23 +19,26 @@ public class UserController {
         this.service = userService;
     }
 
-    @RequestMapping("/update/{id}")
-    @PostMapping
+    @PostMapping(value = "/update/{id}")
     public User updateUser(@PathVariable String id,
                            @RequestBody @Valid UserUpdateDto userDto) {
-        log.info("updateUser: id={}, user={}", id, userDto);
-        return service.updateUserById(Long.parseLong(id), userDto);
+        log.info("Прилетел запрос на UPDATE: id={}, user={}", id, userDto);
+        User resp = service.updateUserById(Long.parseLong(id), userDto);
+        log.info("Ответ на запрос: id={}, user={}", id, resp);
+        return resp;
     }
 
-    @RequestMapping("/delte/{id}")
-    @DeleteMapping
+    @DeleteMapping(value = "/delete/{id}")
     public void deleteUserById(@PathVariable String id) {
         log.info("Прилетел DELETE для user with id={}", id);
         service.deleteUserById(id);
+        log.info("Запрос DELETE отработал для  user with id={}", id);
     }
 
-    @RequestMapping("/delete/{username}")
+    @DeleteMapping("/delete/{username}")
     public void deleteUserByUsername(@PathVariable String username) {
+        log.info("Прилетел DELETE для user with username={}", username);
         service.deleteUserByUsername(username);
+        log.info("Запрос DELETE отработал для  user with username={}", username);
     }
 }

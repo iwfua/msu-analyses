@@ -9,10 +9,6 @@ import lombok.Data;
 @Data
 @Builder(toBuilder = true)
 public class UserUpdateDto {
-
-    @NotBlank
-    private Long id;
-
     @NotBlank
     @Size(min = 1, max = 100)
     private String  firstName;
@@ -24,5 +20,4 @@ public class UserUpdateDto {
     @Email
     @NotBlank
     private String email;
-
 }
